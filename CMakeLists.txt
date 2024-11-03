@@ -14,6 +14,7 @@ target_sources(imgui-cocos INTERFACE
 target_include_directories(imgui-cocos INTERFACE include)
 
 option(HAS_IMGUI "If imgui is already provided externally" OFF)
+option(ENABLE_FREETYPE "If the FreeType font builder should be downloaded and enabled" OFF)
 set(IMGUI_VERSION "v1.91.4" CACHE STRING "What imgui version to download and use")
 
 if (NOT HAS_IMGUI)
@@ -33,4 +34,16 @@ if (NOT HAS_IMGUI)
         ${imgui_SOURCE_DIR}/imgui_demo.cpp
         ${imgui_SOURCE_DIR}/misc/cpp/imgui_stdlib.cpp
     )
+
+    if (ENABLE_FREETYPE)
+        CPMAddPackage("gh:freetype/freetype#VER-2-13-3")
+
+        target_link_libraries(imgui-cocos INTERFACE freetype)
+
+        target_compile_definitions(imgui-cocos INTERFACE -DIMGUI_ENABLE_FREETYPE=1)
+
+        target_sources(imgui-cocos INTERFACE
+            ${imgui_SOURCE_DIR}/misc/freetype/imgui_freetype.cpp
+        )
+    endif()
 endif()
