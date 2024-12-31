@@ -32,7 +32,8 @@ static T fromGLTexture(GLuint tex) {
 	}
 }
 
-#if defined(GEODE_IS_WINDOWS) && GEODE_COMP_GD_VERSION == 22060
+// make sure this doesn't break in some future version
+#if defined(GEODE_IS_WINDOWS) && GEODE_COMP_GD_VERSION >= 22060
 
 #define MAT_SUPPORTS_CURSOR
 

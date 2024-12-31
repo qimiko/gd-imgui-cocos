@@ -10,10 +10,6 @@
 
 using namespace geode::prelude;
 
-$on_mod(Unloaded) {
-	ImGuiCocos::get().destroy();
-}
-
 class $modify(CCMouseDispatcher) {
 	bool dispatchScrollMSG(float y, float x) {
 		if (!ImGuiCocos::get().isInitialized())
@@ -35,6 +31,12 @@ class $modify(CCMouseDispatcher) {
 	#define IF_2_2(...) __VA_ARGS__
 #else
 	#define IF_2_2(...)
+#endif
+
+#if GEODE_COMP_GD_VERSION >= 22070
+	#define IF_2_207(...) __VA_ARGS__
+#else
+	#define IF_2_207(...)
 #endif
 
 class $modify(CCIMEDispatcher) {
@@ -158,12 +160,12 @@ class $modify(CCEGLView) {
 		CCEGLView::swapBuffers();
 	}
 
-	void toggleFullScreen(bool value IF_2_2(, bool borderless)) {
+	void toggleFullScreen(bool value IF_2_2(, bool borderless) IF_2_207(, bool fix)) {
 		if (!ImGuiCocos::get().isInitialized())
-			return CCEGLView::toggleFullScreen(value IF_2_2(, borderless));
+			return CCEGLView::toggleFullScreen(value IF_2_2(, borderless) IF_2_207(, fix));
 
 		ImGuiCocos::get().destroy();
-		CCEGLView::toggleFullScreen(value IF_2_2(, borderless));
+		CCEGLView::toggleFullScreen(value IF_2_2(, borderless) IF_2_207(, fix));
 		ImGuiCocos::get().setup();
 	}
 };
