@@ -11,11 +11,15 @@ target_sources(imgui-cocos INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/hooks.cpp
 )
 
+if (PROJECT_IS_TOP_LEVEL)
+    add_subdirectory(test)
+endif()
+
 target_include_directories(imgui-cocos INTERFACE include)
 
 option(HAS_IMGUI "If imgui is already provided externally" OFF)
 option(ENABLE_FREETYPE "If the FreeType font builder should be downloaded and enabled" OFF)
-set(IMGUI_VERSION "v1.91.4" CACHE STRING "What imgui version to download and use")
+set(IMGUI_VERSION "v1.91.9b" CACHE STRING "What imgui version to download and use")
 
 if (NOT HAS_IMGUI)
     if (NOT COMMAND CPMAddPackage)

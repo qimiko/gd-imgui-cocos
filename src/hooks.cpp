@@ -10,6 +10,7 @@
 
 using namespace geode::prelude;
 
+#ifndef GEODE_IS_IOS
 class $modify(CCMouseDispatcher) {
 	bool dispatchScrollMSG(float y, float x) {
 		if (!ImGuiCocos::get().isInitialized())
@@ -25,6 +26,7 @@ class $modify(CCMouseDispatcher) {
 		return true;
 	}
 };
+#endif
 
 // 2.2 adds some new arguments to the dispatchers
 #if GEODE_COMP_GD_VERSION >= 22000
@@ -97,6 +99,7 @@ bool shouldBlockInput() {
 	return inst.isVisible() && inst.getInputMode() == ImGuiCocos::InputMode::Blocking;
 }
 
+#ifndef GEODE_IS_IOS
 class $modify(CCKeyboardDispatcher) {
 	bool dispatchKeyboardMSG(enumKeyCodes key, bool down IF_2_2(, bool repeat)) {
 		if (!ImGuiCocos::get().isInitialized())
@@ -116,6 +119,7 @@ class $modify(CCKeyboardDispatcher) {
 		}
 	}
 };
+#endif
 
 class $modify(CCTouchDispatcher) {
 	void touches(CCSet* touches, CCEvent* event, unsigned int type) {
@@ -148,7 +152,17 @@ class $modify(CCTouchDispatcher) {
 	}
 };
 
-#ifdef GEODE_IS_WINDOWS
+// need imgui to be drawn inbetween glClear and swapBuffers:
+// drawScene() {
+//   glClear();
+//   draw current scene();
+//   <- here!
+//   swapBuffers();
+// }
+// swapBuffers on android and macos doesnt do anything, so hooking it might not work,
+// and because it doesnt do anything just drawing imgui at the end of drawScene works fine
+
+#if defined(GEODE_IS_WINDOWS) || defined(GEODE_IS_IOS)
 
 #include <Geode/modify/CCEGLView.hpp>
 
@@ -160,6 +174,7 @@ class $modify(CCEGLView) {
 		CCEGLView::swapBuffers();
 	}
 
+#ifdef GEODE_IS_WINDOWS
 	void toggleFullScreen(bool value IF_2_2(, bool borderless) IF_2_207(, bool fix)) {
 		if (!ImGuiCocos::get().isInitialized())
 			return CCEGLView::toggleFullScreen(value IF_2_2(, borderless) IF_2_207(, fix));
@@ -168,6 +183,7 @@ class $modify(CCEGLView) {
 		CCEGLView::toggleFullScreen(value IF_2_2(, borderless) IF_2_207(, fix));
 		ImGuiCocos::get().setup();
 	}
+#endif
 };
 
 #else
