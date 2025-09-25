@@ -33,7 +33,7 @@ static T fromGLTexture(GLuint tex) {
 }
 
 // make sure this doesn't break in some future version
-#if defined(GEODE_IS_WINDOWS) && GEODE_COMP_GD_VERSION >= 22060
+#if defined(GEODE_IS_WINDOWS) && (GEODE_COMP_GD_VERSION >= 22060 || GEODE_COMP_GD_VERSION == 19200)
 
 #define MAT_SUPPORTS_CURSOR
 
@@ -47,7 +47,11 @@ struct GLFWCursorData {
 static void setMouseCursor(ImGuiMouseCursor cursor) {
 	auto* glfwWindow = CCEGLView::get()->getWindow();
 
+#if GEODE_COMP_GD_VERSION >= 22060
 	auto& cursorField = *reinterpret_cast<GLFWCursorData**>(reinterpret_cast<uintptr_t>(glfwWindow) + 0x50);
+#else
+	auto& cursorField = *reinterpret_cast<GLFWCursorData**>(reinterpret_cast<uintptr_t>(glfwWindow) + 0x2c);
+#endif
 	auto winCursor = IDC_ARROW;
 	switch (cursor) {
 		case ImGuiMouseCursor_Arrow: winCursor = IDC_ARROW; break;
